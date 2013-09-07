@@ -44,6 +44,7 @@
       // pull up the show
       self.schemas.Show.findOne({name: episodeInfo.showName}, function(err, show){
         if (err || !show){ return cb({status: 500, msg: err}) }
+        self.schemas.ShowProgress.remove({show: show._id, owner: userId});
 
         // now find the episode
         self.schemas.Episode.findOne({show: show._id, season: episodeInfo.season,
@@ -53,8 +54,13 @@
 
           var showProgress = new self.schemas.ShowProgress({
             owner: userId,
+            show: show._id,
             lastEpisode: episode._id
           });
+          async.parallel([
+            function(cb){ self.schemas.ShowProgress.remove({owner: userId, show: show._id}, cb)},
+            function(cb){ showProgress.save(cb) }
+          ], cb);
           showProgress.save(cb);
         });
       });
@@ -64,12 +70,17 @@
         if (err || !episode){ return cb({status: 500, msg: err}) }
         var showProgress = new self.schemas.ShowProgress({
           owner: userId,
+          show: episode.show,
           lastEpisode: episode._id
         });
-        showProgress.save(cb);
+        async.parallel([
+          function(cb){ self.schemas.ShowProgress.remove({owner: userId, show: episode.show}, cb)},
+          function(cb){ showProgress.save(cb) }
+        ], cb);
       });
     }
   };
+
 
   /**
     Looks up information about the current episode and the show it is in

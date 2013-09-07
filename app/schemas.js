@@ -48,6 +48,7 @@
 
   var ShowProgress = new Schema({
     owner: ObjectId,
+    show: ObjectId,
     lastEpisode: ObjectId
   });
 
