@@ -17,10 +17,11 @@
   _ptype._name = "WikipediaMerge";
 
   _ptype.mergeEpisode = function(episodeInfo, cb){
+    console.log("merging", episodeInfo);
     var self = this;
     // get the show
     this.schemas.Show.findOne({name: episodeInfo.show}, function(err, show){
-      if (err){ return cb({status: 500, err: err}) }
+      if (err || !show){ return cb({status: 500, err: err}) }
 
       // get the episode
       self.schemas.Episode.findOne({show: show._id, season: episodeInfo.season,
