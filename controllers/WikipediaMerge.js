@@ -51,7 +51,7 @@
   getTimestamp = function(string){
     var date = new Date(string);
     var UTC  = date.getTime();
-    UTC -= 14400000;
+    UTC += 14400000;
     return UTC;
   };
 
