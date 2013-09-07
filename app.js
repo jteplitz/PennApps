@@ -36,9 +36,9 @@
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser(conf.get("secret")));
-    /*app.use(express.session({
+    app.use(express.session({
       store: sessionStore
-    }));*/
+    }));
     app.use(app.router);
     app.use(require('less-middleware')({ src: __dirname + '/public' }));
     app.use(express["static"](path.join(__dirname, 'public')));
