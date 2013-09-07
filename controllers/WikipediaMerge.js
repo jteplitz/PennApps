@@ -4,7 +4,8 @@
   var base = require("./base.js"),
       ViewClass = require("../views/WikipediaMerge.js"),
 
-      WikipediaMergeCtrl, _ptype;
+      WikipediaMergeCtrl, _ptype,
+      getTimestamp;
 
   WikipediaMergeCtrl = function(schemas){
     this.schemas = schemas;
@@ -35,16 +36,23 @@
             season: episodeInfo.season,
             episode: episodeInfo.episodeNum,
             name: episodeInfo.name,
-            airDate: new Date(episodeInfo.airDate).getTime()
+            airDate: getTimestamp(episodeInfo.airDate)
           });
           newEpisode.save(cb);
         } else {
-          episode.airDate = new Date(episodeInfo.airDate).getTime();
+          episode.airDate = getTimestamp(episodeInfo.airDate);
           episode.markModified("airDate");
           episode.save(cb);
         }
       });
     });
+  };
+
+  getTimestamp = function(string){
+    var date = new Date(string);
+    var UTC  = date.UTC();
+    UTC -= 14400000;
+    return UTC;
   };
 
   module.exports = WikipediaMergeCtrl;
