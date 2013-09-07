@@ -4,16 +4,17 @@
   var _ = require("underscore"),
       handlePost,
       handler, dispatch,
+      cleanWiki,
 
       ControllerClass = require("../controllers/WikipediaMerge.js");
 
   handlePost = function(req, res, next){
     var episodeInfo = {
       show: req.body.show_title,
-      name: req.body.title,
-      season: req.body.season,
-      episodeNum: req.body.episode_number,
-      airDate: req.body.date
+      name: cleanWiki(req.body.title),
+      season: cleanWiki(req.body.season),
+      episodeNum: cleanWiki(req.body.episode_number),
+      airDate: cleanWiki(req.body.date)
     };
     var control = new ControllerClass(req._schemas);
     control.mergeEpisode(episodeInfo, function(err){
@@ -30,6 +31,15 @@
     }
 
     return next(405);
+  };
+
+  cleanWiki = function(val){
+    val = String(val);
+    var end = val.indexOf("[");
+    if (end !== -1){
+      val = val.substr(0, end);
+    }
+    return val;
   };
   
   module.exports = handler;
