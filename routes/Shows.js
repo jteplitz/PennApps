@@ -5,7 +5,7 @@
       handleGet,
       handler, dispatch,
 
-      ControllerClass = require("../controllers/AdminShow.js");
+      ControllerClass = require("../controllers/Shows.js");
 
   handleGet = function(req, res, next){
     var control = new ControllerClass(req._schemas);
