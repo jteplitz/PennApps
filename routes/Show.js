@@ -20,7 +20,7 @@
   };
 
   handlePost = function(req, res, next){
-    console.log(req.body.netflixId);
+    console.log(req.body);
     var currentEpisodeInfo = {
       showName: (_.has(req.body, "showName")) ? req.body.showName : null,
       season: (_.has(req.body, "season")) ? req.body.season : null,
