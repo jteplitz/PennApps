@@ -7,7 +7,7 @@
       ViewClass = require("../views/Show.js"),
 
       ShowCtrl, _ptype,
-      getEpisodeInfo;
+      getEpisodeInfo, cleanShow;
 
   ShowCtrl = function(schemas){
     this.schemas = schemas;
@@ -44,39 +44,49 @@
       // pull up the show
       self.schemas.Show.findOne({name: episodeInfo.showName}, function(err, show){
         if (err || !show){ return cb({status: 500, msg: err}) }
-        self.schemas.ShowProgress.remove({show: show._id, owner: userId});
+        // check that this would be the newest
+        cleanShow(self.schemas, userId, show._id, episodeInfo.season, episodeInfo.episodeNum, function(err, go){
+          if (!go){ return cb(null) } // not the newest
+          self.schemas.ShowProgress.remove({show: show._id, owner: userId});
 
-        // now find the episode
-        self.schemas.Episode.findOne({show: show._id, season: episodeInfo.season,
-                                      episode: episodeInfo.episodeNum}, function(err, episode){
+          // now find the episode
+          self.schemas.Episode.findOne({show: show._id, season: episodeInfo.season,
+                                        episode: episodeInfo.episodeNum}, function(err, episode){
 
-          if (err || !episode){ return cb({status: 500, msg: err}) }
+            if (err || !episode){ return cb({status: 500, msg: err}) }
 
-          var showProgress = new self.schemas.ShowProgress({
-            owner: userId,
-            show: show._id,
-            lastEpisode: episode._id
+            var showProgress = new self.schemas.ShowProgress({
+              owner: userId,
+              show: show._id,
+              lastEpisode: episode._id
+            });
+            async.parallel([
+              function(cb){ self.schemas.ShowProgress.remove({owner: userId, show: show._id}, cb)},
+              function(cb){ showProgress.save(cb) }
+            ], cb);
+            showProgress.save(cb);
           });
-          async.parallel([
-            function(cb){ self.schemas.ShowProgress.remove({owner: userId, show: show._id}, cb)},
-            function(cb){ showProgress.save(cb) }
-          ], cb);
-          showProgress.save(cb);
         });
       });
     } else {
       // pull up the episode by netflix id
       self.schemas.Episode.findOne({netflixId: episodeInfo.netflixId}, function(err, episode){
-        if (err || !episode){ return cb({status: 500, msg: err}) }
-        var showProgress = new self.schemas.ShowProgress({
-          owner: userId,
-          show: episode.show,
-          lastEpisode: episode._id
+        // check that thhis would be the newest
+        cleanShow(self.schemas, userId, episode.show, episode.season, episode.episode, function(err, go){
+          if (err || !episode){ return cb({status: 500, msg: err}) }
+          
+          if (!go){ return cb(null) } // not the newest
+
+          var showProgress = new self.schemas.ShowProgress({
+            owner: userId,
+            show: episode.show,
+            lastEpisode: episode._id
+          });
+          async.parallel([
+            function(cb){ self.schemas.ShowProgress.remove({owner: userId, show: episode.show}, cb)},
+            function(cb){ showProgress.save(cb) }
+          ], cb);
         });
-        async.parallel([
-          function(cb){ self.schemas.ShowProgress.remove({owner: userId, show: episode.show}, cb)},
-          function(cb){ showProgress.save(cb) }
-        ], cb);
       });
     }
   };
@@ -102,6 +112,37 @@
         });
       });
     };
+  };
+
+  /**
+    Checks if there is any show progress that is newer than the given one
+    Returns true if the given episode is the newest
+  */
+  cleanShow = function(schemas, userId, show, testSeason, testEpisode, cb){
+    schemas.ShowProgress.findOne({owner: userId, show: show}, function(err, progress){
+      if (err){ return cb(err) }
+    
+      if (!progress){
+        return cb(null, true);
+      }
+
+      // get the info about the given progress
+      schemas.Episode.findOne({_id: progress.lastEpisode}, function(err, episode){
+        if (err || !episode){ return cb({status: 500, msg: err}) }
+
+        if (episode.season > testSeason){
+          return cb(null, false);
+        }
+
+        if (episode.season === testSeason){
+          if (episode.episode > testEpisode){
+            return cb(null, false);
+          }
+        }
+
+        return cb(null, true);
+      });
+    });
   };
 
   module.exports = ShowCtrl;

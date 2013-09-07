@@ -22,7 +22,6 @@
 
   handlePost = function(req, res, next){
     var episodeData = {
-      show: req.body.show,
       season: req.body.season,
       episode: req.body.episode,
       corpus: req.body.corpus,
