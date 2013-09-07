@@ -31,7 +31,21 @@
         firstName: userData.firstName,
         lastName: userData.lastName
       });
-      user.save(cb);
+      user.save(function(err, user){
+        if (err){ return cb(err) }
+        if (userData.deviceId){
+          // add the authed device
+          var deviceAuth = new self.schemas.DeviceAuth({
+            user: user._id,
+            deviceAuth: userData.deviceId
+          });
+          deviceAuth.save(function(err, auth){
+            cb(err, user);
+          });
+        } else {
+          return cb(null, user);
+        }
+      });
     });
   };
 

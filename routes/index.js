@@ -25,7 +25,7 @@
 
     ["/a/show",              Routes.AdminShow,    1, 1, 2,  ["get", "post" ]],
     ["/a/show/:id/episode",  Routes.AdminEpisode, 1, 0, 2,  ["get", "post" ]],
-    ["/a/wikipedia",  Routes.WikipediaMerge, 1, 0, 2,  ["post" ]]
+    ["/a/wikipedia",         Routes.WikipediaMerge, 1, 0, 2,  ["post" ]]
   ];
 
   exports.routes = routeList;

@@ -21,7 +21,8 @@
       email: req.body.email,
       password: req.body.password,
       firstName: req.body.firstName,
-      lastName: req.body.lastName
+      lastName: req.body.lastName,
+      deviceId: (_.has(req.body, "deviceId")) ? req.body.deviceId : null
     };
     var control = new ControllerClass(req._schemas, req._conf);
     control.createUser(userData, function(err, user){
