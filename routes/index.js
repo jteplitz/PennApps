@@ -9,7 +9,8 @@
     AdminEpisode: require("./AdminEpisode.js"),
     Show: require("./Show.js"),
     Shows: require("./Shows.js"),
-    ShowInfo: require("./ShowInfo.js")
+    ShowInfo: require("./ShowInfo.js"),
+    WikipediaMerge: require("./WikipediaMerge.js")
   };
 
   // routes, function, mongo, conf, auth, methods
@@ -23,7 +24,8 @@
     ["/d/show/:id",  Routes.ShowInfo,    1, 0, 0,  ["get" ]],
 
     ["/a/show",              Routes.AdminShow,    1, 1, 2,  ["get", "post" ]],
-    ["/a/show/:id/episode",  Routes.AdminEpisode, 1, 0, 2,  ["get", "post" ]]
+    ["/a/show/:id/episode",  Routes.AdminEpisode, 1, 0, 2,  ["get", "post" ]],
+    ["/a/wikipedia",  Routes.WikipediaMerge, 1, 0, 2,  ["post" ]]
   ];
 
   exports.routes = routeList;

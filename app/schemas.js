@@ -43,7 +43,8 @@
     name: String,
     corpus: String,
     description: String,
-    netflixId: String
+    netflixId: String,
+    airDate: Number
   });
 
   var ShowProgress = new Schema({
