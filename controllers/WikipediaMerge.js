@@ -26,11 +26,22 @@
       self.schemas.Episode.findOne({show: show._id, season: episodeInfo.season,
                                     episode: episodeInfo.episodeNum}, function(err, episode){
         if (err){ return cb({status: 500, err: err}) }
-        
-        episode.airDate = new Date(episodeInfo.airDate).getTime();
-        episode.markModified("airDate");
 
-        episode.save(cb);
+        if (!episode){
+          // this wasn't in the netflix database, so create it
+          var newEpisode = new self.schemas.Episode({
+            show: show._id,
+            season: episodeInfo.season,
+            episode: episodeInfo.episodeNum,
+            name: episodeInfo.name,
+            airDate: new Date(episodeInfo.airDate).getTime()
+          });
+          newEpisode.save(cb);
+        } else {
+          episode.airDate = new Date(episodeInfo.airDate).getTime();
+          episode.markModified("airDate");
+          episode.save(cb);
+        }
       });
     });
   };

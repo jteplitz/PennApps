@@ -9,7 +9,8 @@
 
   handlePost = function(req, res, next){
     var episodeInfo = {
-      show: req.body.title,
+      show: req.body.show_title,
+      name: req.body.title,
       season: req.body.season,
       episodeNum: req.body.episode_number,
       airDate: req.body.date
