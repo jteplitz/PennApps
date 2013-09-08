@@ -1,0 +1,7 @@
+{
+  "mongo": "mongodb://heroku_app17969876:344k0dq47bjdsr4o7e7l0k9m08@ds043368.mongolab.com:43368/heroku_app17969876",
+  "google": {
+    "key": "AIzaSyBkeCfatFAnGvwMj91Acl7Cx9uP0IqidoE",
+    "project": "372110932294"
+  }
+}
