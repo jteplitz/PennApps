@@ -64,14 +64,10 @@
       request.makeRequest("https://www.googleapis.com", url, "POST", data, headers, function(err, data){
         if (err){ return cb(err) }
         console.log("got prediction data", data);
-        var types = {};
-        for (var i = 0; i < data.outputMulti.length; i++){
-          types[data.outputMulti[i].label] = data.outputMulti[i].score;
-        }
         
         var predict = {
           _id: index,
-          spoiler: (parseFloat(types.spoiler) >= 0.8)
+          spoiler: (data.outputLabel === "spoiler")
         };
         
         return cb(null, predict);
