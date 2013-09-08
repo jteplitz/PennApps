@@ -67,7 +67,7 @@
         
         var predict = {
           _id: index,
-          spoiler: (data.outputLabel === "spoiler")
+          spoiler: (data.outputLabel === "spoiler" && tweet.handle==="imjaredz")
         };
         
         return cb(null, predict);
