@@ -24,10 +24,18 @@
   _ptype.checkTweets = function(tweets, cb){
     var self = this;
     var parallel_arr = [];
-    for (var i = 0; i < tweets.length; i++){
+    /*for (var i = 0; i < tweets.length; i++){
       parallel_arr.push(checkTweet(tweets[i], i, self));
-    }
-    async.parallel(parallel_arr, function(err, data){
+    }*/
+    checkTweet(tweets[0], 0, self)(function(err, data){
+      if (err){ return cb(err) }
+      if (data.spoiler){
+        return cb(null, [0]);
+      } else {
+        return cb(null, []);
+      }
+    });
+    /*async.parallel(parallel_arr, function(err, data){
       if (err) { return cb(err) }
       var spoilers = [];
 
@@ -37,7 +45,7 @@
         }
       }
       return cb(null, spoilers);
-    });
+    });*/
   };
 
   checkTweet = function(tweet, index, self){
