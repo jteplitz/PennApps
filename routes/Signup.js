@@ -17,6 +17,9 @@
   };
 
   handlePost = function(req, res, next){
+    console.log('getting a signup post request with request body:')
+    console.log(req.body);
+
     var userData = {
       email: req.body.email,
       password: req.body.password,
