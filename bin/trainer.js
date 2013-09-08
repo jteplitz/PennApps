@@ -62,6 +62,7 @@
       twitterListener.on("tweets", sendTweets);
 
       twitterListener.on("close", function(data){
+        console.log(tweets[data.id]);
         console.log("getting normal tweets", data, tweets);
         var spoilters = data;
         var normalListener = twitter({
@@ -103,13 +104,17 @@
      });
    };
 
+   // given tweets and episode id (as defined in our mongodb - episode._id),
+   // it creates a new classifier from google
    createNewCorpus = function(id, tweets, cb){
      var data = {
        id: id,
        modelType: "REGRESSION",
-       trainingInstances: [],
+       trainingInstances: [], // this should be ALL tweets, spoilers and not spoilers
        key: conf.get("google:key")
      };
+     // currently, this line classifies them all as spoilers. we
+     // need to fix this
      data.trainingInstances = createTrainingInstances(tweets);
      var headers = {
        Authorization: "Bearer ya29.AHES6ZQYO7uWbjGm881FpSTPEhn8lPj2QloHuy_bSMiyRg",
@@ -123,6 +128,7 @@
      });
    };
 
+   //  updates the classifier
    updateCorpus = function(id, tweets, cb){
      var data = {
        trainingInstances: [],
@@ -145,7 +151,7 @@
      for (var i = 0; i < tweets.length; i++){
        var tweet = tweets[i];
        var instance = {
-         output: "spoiler",
+         output: "spoiler", // make this "not spoiler" for when it's not a spoiler, configurable via func param
          csvInstance: []
        };
        instance.csvInstance.push(tweet.text);
