@@ -2,7 +2,6 @@ var request = require('request');
 var requested = 0;
 
 module.exports = function(episode) {
-  console.log("setup", episode);
 	var events = require('events');
 	var eventEmitter = new events.EventEmitter();
 	queryTwitter(episode, eventEmitter);
@@ -10,7 +9,6 @@ module.exports = function(episode) {
 }
 
 var queryTwitter = function(options, eventEmitter) {
-  console.log("looking up on", x);
   var form = {
     q: options.query,
     count: 100,
@@ -18,9 +16,8 @@ var queryTwitter = function(options, eventEmitter) {
   };
   if (options.hasOwnProperty("airDate")){
     var x = new Date(options.airDate + 259200000);
-    form.until = x.getFullYear() + '-' + ("0" + (x.getMonth() + 1)).split(-2) + '-' + ("0" + x.getDate()).split(-2),
+    form.until = x.getFullYear() + '-' + ("0" + (x.getMonth() + 1)).split(-2) + '-' + ("0" + x.getDate()).split(-2);
   }
-  console.log("going", form);
   if (options.hasOwnProperty("max_id")){
     form["max_id"] = options.max_id;
   }
@@ -56,7 +53,7 @@ var queryTwitter = function(options, eventEmitter) {
       options.max_id = data.statuses[data.statuses.length - 1].id_str;
       eventEmitter.emit('tweets', {id:options._id, 'tweets':x, spoiler: options.spoiler});
       requested++;
-      if (requested <= 20) {
+      if (requested <= 10) {
         queryTwitter(options, eventEmitter);
       } else {
         eventEmitter.emit("close", {_id: options._id});

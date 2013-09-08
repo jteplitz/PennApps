@@ -10,7 +10,9 @@
     Show: require("./Show.js"),
     Shows: require("./Shows.js"),
     ShowInfo: require("./ShowInfo.js"),
-    WikipediaMerge: require("./WikipediaMerge.js")
+    WikipediaMerge: require("./WikipediaMerge.js"),
+    Authorize: require("./Authorize.js"),
+    FilterTweets: require("./FilterTweets.js")
   };
 
   // routes, function, mongo, conf, auth, methods
@@ -25,7 +27,10 @@
 
     ["/a/show",              Routes.AdminShow,    1, 1, 2,  ["get", "post" ]],
     ["/a/show/:id/episode",  Routes.AdminEpisode, 1, 0, 2,  ["get", "post" ]],
-    ["/a/wikipedia",         Routes.WikipediaMerge, 1, 0, 2,  ["post" ]]
+    ["/a/wikipedia",         Routes.WikipediaMerge, 1, 0, 2,  ["post" ]],
+    
+    ["/authorize", Routes.Authorize,   1, 1, 0,  ["get", "post"]],
+    ["/filter",   Routes.FilterTweets, 1, 1, 1,  ["post"       ]]
   ];
 
   exports.routes = routeList;

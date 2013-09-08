@@ -4,6 +4,8 @@
   var twitter     = require("./twitter.js"),
       schemas     = require("../app/schemas.js"),
       request     = require("./request.js"),
+      csv         = require("csv"),
+      fs          = require("fs"),
       mongoose    = require("mongoose"),
       conf        = require('nconf').argv().env().file({file: __dirname + '/config.json'}),
 
@@ -18,8 +20,7 @@
     // get all the recent episodes
     var now = new Date().getTime();
     var lastWeek = now - 604800000;
-    console.log("lastWeek", lastWeek);
-    schemas.Episode.find({airDate: {$gte: lastWeek, $lte: now}, corpus: null}, function(err, episodes){
+    schemas.Episode.find({airDate: {$gte: lastWeek - 86400000, $lte: now + 86400000}, corpus: null}, function(err, episodes){
       console.log("got episodes", episodes);
       if (err){
         console.log("error", err);
@@ -53,7 +54,7 @@
         show: show.name,
         airDate: episode.airDate,
         _id: episode._id,
-        query: show.name + " spoiler alert",
+        query: show.name + "",
         spoiler: true
       };
       
@@ -62,18 +63,13 @@
       twitterListener.on("tweets", sendTweets);
 
       twitterListener.on("close", function(data){
-        console.log(tweets[data.id]);
-        console.log("getting normal tweets", data, tweets);
-        var spoilters = data;
-        var normalListener = twitter({
-          show: show.name,
-          query: show.name,
-          _id: episode._id,
-          spoiler: false
-        });
-        createNewCorpus(data._id, tweets[data._id], function(err){
+        // get the instance data
+        var tweetData = createTrainingInstances(tweets[data._id]);
+        console.log("got tweet data", tweetData);
+        csv().from.array(tweetData).to.stream(fs.createWriteStream(__dirname+'/spoilers.csv'));
+        /*createNewCorpus(data._id, tweets[data._id], function(err){
           console.log("corpus created");
-        });
+        });*/
         twitterListener.removeListener("tweets", sendTweets);
       });
     });
@@ -84,7 +80,6 @@
    */
    sendTweets = function(data){
      var theseTweets = data.tweets;
-     console.log("got tweets", data.id);
      // get the episode info
      schemas.Episode.findOne({_id: data.id}, function(err, episode){
        if (err || !episode){
@@ -94,9 +89,9 @@
 
        if(!tweets[data.id]){
          tweets[data.id] = theseTweets;
-         episode.corpus  = episode._id;
-         episode.markModified("corpus");
-         episode.save();
+         //episode.corpus  = episode._id;
+         /*episode.markModified("corpus");
+         episode.save();*/
        } else {
          console.log("concating", tweets[data.id]);
          tweets[data.id] = tweets[data.id].concat(theseTweets);
@@ -150,13 +145,14 @@
      var trainingInstances = [];
      for (var i = 0; i < tweets.length; i++){
        var tweet = tweets[i];
-       var instance = {
-         output: "spoiler", // make this "not spoiler" for when it's not a spoiler, configurable via func param
-         csvInstance: []
-       };
-       instance.csvInstance.push(tweet.text);
-       instance.csvInstance.push(tweet.screen_name);
-       instance.csvInstance.push(tweet.created_at);
+       console.log("got tweet");
+       var instance = [
+         "notspoiler" // make this "not spoiler" for when it's not a spoiler, configurable via func param
+       ];
+       instance.push(tweet.tweet.replace(/spoiler alert/ig, ""));
+       instance.push(tweet.handle);
+       instance.push(new Date(tweet.date).getTime());
+       console.log("instance", instance);
 
        trainingInstances.push(instance);
      }
