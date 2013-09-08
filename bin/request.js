@@ -58,7 +58,7 @@
       });
       res.on("end", function(){
         if (res.statusCode !== 200){
-          return callback({statusCode: res.statusCode}, data);
+          return callback({statusCode: res.statusCode, data: data});
         }
         try{
           data = JSON.parse(data);

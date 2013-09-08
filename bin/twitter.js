@@ -53,7 +53,7 @@ var queryTwitter = function(options, eventEmitter) {
       options.max_id = data.statuses[data.statuses.length - 1].id_str;
       eventEmitter.emit('tweets', {id:options._id, 'tweets':x, spoiler: options.spoiler});
       requested++;
-      if (requested <= 10) {
+      if (requested <= 5) {
         queryTwitter(options, eventEmitter);
       } else {
         eventEmitter.emit("close", {_id: options._id});

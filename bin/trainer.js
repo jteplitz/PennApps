@@ -20,7 +20,8 @@
     // get all the recent episodes
     var now = new Date().getTime();
     var lastWeek = now - 604800000;
-    schemas.Episode.find({airDate: {$gte: lastWeek - 86400000, $lte: now + 86400000}, corpus: null}, function(err, episodes){
+    //schemas.Episode.find({airDate: {$gte: lastWeek - 86400000, $lte: now + 86400000}}, function(err, episodes){
+    schemas.Episode.find({_id: "522b8a9e6526b20200000005"}, function(err, episodes){
       console.log("got episodes", episodes);
       if (err){
         console.log("error", err);
@@ -54,7 +55,7 @@
         show: show.name,
         airDate: episode.airDate,
         _id: episode._id,
-        query: show.name + "",
+        query: "a",
         spoiler: true
       };
       

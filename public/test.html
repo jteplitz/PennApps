@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var tweets = [
+        {
+          text: "Breaking bad is amazing!",
+          handle: "jsont",
+          time: "1:27 PM - 8 Sep 13"
+        },
+        {
+          text: "Woah. Walt starts cooking meth?!",
+          handle: "jordant",
+          time: "1:30 PM - 1 Sep 13"
+        },
+        {
+          text: "OMG. I can't believe Skyler dies.",
+          handle: "bitchy",
+          time: "8:30 PM - 1 Sep 13"
+        }
+      ];
+      tweets = JSON.stringify(tweets);
+      $.ajax({
+        type: "POST",
+        url: "/filter",
+        headers: {
+          "X-SHADES-AUTH": "testing"
+        },
+        data: {
+          tweets: tweets
+        },
+        onSuccess: function(data){
+          console.log(err, data);
+        },
+        onFailure: function(err){
+          console.log(err);
+        }
+      });
+    </script>
+  </body>
+</html>
