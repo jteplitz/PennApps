@@ -23,8 +23,8 @@
     var userData = {
       email: req.body.email,
       password: req.body.password,
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
+      firstName: (_.has(req.body, "firstName")) ? req.body.firstName : "",
+      lastName: (_.has(req.body, "lastName")) ? req.body.lastName : "",
       deviceId: (_.has(req.body, "deviceId")) ? req.body.deviceId : null
     };
     var control = new ControllerClass(req._schemas, req._conf);
